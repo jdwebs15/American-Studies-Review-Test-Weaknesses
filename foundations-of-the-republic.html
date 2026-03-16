@@ -1,1 +1,1386 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Foundations of the Republic — Northwest Ordinance & Constitutional Debates</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .game-wrap{
+      width:min(1180px,94vw);
+      margin:20px auto 40px;
+    }
 
+    .screen{display:none}
+    .screen.active{display:block}
+
+    .hero-game{
+      padding:22px;
+    }
+
+    .title{
+      font-size:clamp(1.6rem,3vw,2.5rem);
+      font-weight:900;
+      margin:0 0 6px;
+      line-height:1.08;
+    }
+
+    .subtitle{
+      margin:0;
+      color:var(--muted);
+      font-size:1rem;
+      line-height:1.5;
+    }
+
+    .badge-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:16px;
+    }
+
+    .badge{
+      padding:9px 13px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--muted);
+      font-weight:700;
+      font-size:.9rem;
+    }
+
+    .start-grid{
+      display:grid;
+      grid-template-columns:1fr 320px;
+      gap:18px;
+      margin-top:18px;
+    }
+
+    .field{margin-bottom:14px}
+
+    label{
+      display:block;
+      font-weight:800;
+      margin-bottom:6px;
+    }
+
+    input,select{
+      width:100%;
+      padding:12px 14px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#0c1427;
+      color:var(--text);
+      font-size:1rem;
+      outline:none;
+    }
+
+    .btn-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    button{
+      border:none;
+      border-radius:14px;
+      padding:12px 16px;
+      font-weight:800;
+      cursor:pointer;
+      transition:transform .08s ease, opacity .2s ease, background .2s ease;
+      font-family:inherit;
+      font-size:.98rem;
+    }
+
+    button:hover{transform:translateY(-1px)}
+    button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+
+    .btn-primary{background:var(--accent);color:#fff}
+    .btn-secondary{background:#1b2642;color:var(--text);border:1px solid var(--line)}
+    .btn-bad{background:var(--bad);color:#fff}
+
+    .helper-list{
+      margin:0;
+      padding-left:18px;
+      color:var(--muted);
+      line-height:1.55;
+    }
+
+    .helper-list li{margin:6px 0}
+
+    .class-card{
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .class-tag{
+      padding:12px 14px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      font-weight:700;
+    }
+
+    .tiny{
+      font-size:.9rem;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .mono{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+    }
+
+    .topbar{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:10px;
+      margin:18px 0;
+    }
+
+    .stat{
+      padding:14px 16px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
+    }
+
+    .stat-label{
+      font-size:.8rem;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .stat-value{
+      font-size:1.08rem;
+      font-weight:900;
+      margin-top:4px;
+    }
+
+    .qcard{padding:22px}
+
+    .qmeta{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:8px 12px;
+      color:var(--muted);
+      font-size:.9rem;
+      font-weight:700;
+    }
+
+    .qtext{
+      font-size:1.2rem;
+      line-height:1.45;
+      font-weight:800;
+      margin:8px 0 18px;
+    }
+
+    .choices{
+      display:grid;
+      gap:12px;
+    }
+
+    .choice{
+      width:100%;
+      text-align:left;
+      padding:14px 16px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#101a31;
+      color:var(--text);
+      font-size:1rem;
+      font-weight:700;
+      line-height:1.35;
+    }
+
+    .choice:hover{background:#14203b}
+    .choice.correct{background:rgba(43,213,118,.14);border-color:rgba(43,213,118,.5)}
+    .choice.incorrect{background:rgba(255,92,122,.12);border-color:rgba(255,92,122,.5)}
+    .choice.locked{pointer-events:none}
+
+    .feedback{
+      margin-top:16px;
+      min-height:66px;
+      padding:14px 16px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+    }
+
+    .feedback.good{border-color:rgba(43,213,118,.45);background:rgba(43,213,118,.10)}
+    .feedback.warn{border-color:rgba(255,209,102,.45);background:rgba(255,209,102,.10)}
+    .feedback.bad{border-color:rgba(255,92,122,.45);background:rgba(255,92,122,.10)}
+    .feedback strong{display:block;margin-bottom:6px}
+
+    .progress{
+      height:14px;
+      border-radius:999px;
+      overflow:hidden;
+      background:#0b1326;
+      border:1px solid var(--line);
+      margin-top:14px;
+    }
+
+    .bar{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,var(--accent),#9ab8ff);
+      transition:width .25s ease;
+    }
+
+    .footer-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-top:18px;
+      flex-wrap:wrap;
+    }
+
+    .results{padding:22px}
+
+    .score{
+      font-size:clamp(2rem,5vw,3rem);
+      font-weight:900;
+      margin:6px 0;
+    }
+
+    .result-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+      margin:18px 0;
+    }
+
+    .result-box{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px 16px;
+      background:rgba(255,255,255,.03);
+    }
+
+    .result-box .k{
+      font-size:.82rem;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .result-box .v{
+      font-size:1.18rem;
+      font-weight:900;
+      margin-top:4px;
+    }
+
+    .review{
+      margin-top:18px;
+      border-top:1px solid var(--line);
+      padding-top:18px;
+    }
+
+    .review-item{
+      padding:14px 0;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+
+    .review-item:last-child{border-bottom:none}
+
+    .review-q{
+      font-weight:800;
+      margin-bottom:6px;
+      line-height:1.45;
+    }
+
+    .review-a{
+      color:var(--muted);
+      line-height:1.5;
+      font-size:.96rem;
+    }
+
+    .nav-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+
+    .back-link{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      font-weight:800;
+      text-decoration:none;
+    }
+
+    @media (max-width:900px){
+      .start-grid{grid-template-columns:1fr}
+      .topbar{grid-template-columns:1fr 1fr}
+      .result-grid{grid-template-columns:1fr 1fr}
+    }
+
+    @media (max-width:620px){
+      .result-grid{grid-template-columns:1fr}
+      .topbar{grid-template-columns:1fr}
+      .qtext{font-size:1.08rem}
+    }
+  </style>
+</head>
+<body>
+  <div class="game-wrap">
+    <div class="nav-row">
+      <a class="back-link" href="index.html">← Back to Hub</a>
+      <div class="hero-badges">
+        <span>Standalone Game</span>
+        <span>40 Questions</span>
+        <span>Content Statements 5–7</span>
+      </div>
+    </div>
+
+    <section id="startScreen" class="screen active">
+      <div class="section-card hero-game">
+        <h1 class="title">Foundations of the Republic</h1>
+        <p class="subtitle">Northwest Ordinance &amp; Constitutional Debates — American Government OST Review</p>
+
+        <div class="badge-row">
+          <div class="badge">Question Order Shuffles</div>
+          <div class="badge">Answer Choices Shuffle</div>
+          <div class="badge">Hint on Miss</div>
+          <div class="badge">Auto-Advance on Correct</div>
+        </div>
+
+        <div class="start-grid">
+          <div class="section-card">
+            <div class="field">
+              <label for="studentName">Student Name</label>
+              <input id="studentName" type="text" placeholder="Enter your name" maxlength="40" />
+            </div>
+
+            <div class="field">
+              <label for="classCard">Class / Period Card</label>
+              <select id="classCard">
+                <option value="">Choose class / period</option>
+                <option>Period 1</option>
+                <option>Period 2</option>
+                <option>Period 3</option>
+                <option>Period 4</option>
+                <option>Period 5</option>
+                <option>Period 6</option>
+                <option>Period 7</option>
+                <option>Period 8</option>
+                <option>AM Government</option>
+                <option>PM Government</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="btn-row">
+              <button id="startBtn" class="btn-primary" type="button">Start Game</button>
+              <button id="resetStoredBtn" class="btn-secondary" type="button">Clear Saved Session</button>
+            </div>
+
+            <p class="tiny" style="margin-top:10px;">
+              Progress for this game saves on this device unless you restart or clear the saved session.
+            </p>
+          </div>
+
+          <div class="section-card">
+            <h2 style="margin-top:0;">Game Focus</h2>
+            <ul class="helper-list">
+              <li>Northwest Ordinance precedents for governing the United States</li>
+              <li>Public education, civil liberties, republican government, and prohibition of slavery</li>
+              <li>Popular sovereignty, limited government, federalism, separation of powers, and checks and balances</li>
+              <li>Constitutional structure, powers, and protection of rights</li>
+              <li>Federalist vs. Anti-Federalist arguments</li>
+              <li>How the Bill of Rights answered Anti-Federalist concerns</li>
+            </ul>
+
+            <div class="class-card">
+              <div class="class-tag">Students must correct wrong answers before moving on</div>
+              <div class="class-tag">Hints do not reveal the answer</div>
+              <div class="class-tag">Restart button included for new 100% attempts</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="screen">
+      <div class="topbar">
+        <div class="stat">
+          <div class="stat-label">Student</div>
+          <div class="stat-value" id="studentStat">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Progress</div>
+          <div class="stat-value" id="progressStat">0 / 40</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Accuracy</div>
+          <div class="stat-value" id="accuracyStat">0%</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Timer</div>
+          <div class="stat-value mono" id="timerStat">00:00</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Started</div>
+          <div class="stat-value mono" id="startedStat">—</div>
+        </div>
+      </div>
+
+      <div class="section-card qcard">
+        <div class="qmeta">
+          <div class="pill" id="topicPill">Topic</div>
+          <div class="pill" id="classPill">Class</div>
+        </div>
+
+        <div id="questionText" class="qtext">Question text here</div>
+
+        <div id="choicesWrap" class="choices"></div>
+
+        <div id="feedback" class="feedback">
+          <strong>Directions</strong>
+          Choose the best answer.
+        </div>
+
+        <div class="progress">
+          <div id="progressBar" class="bar"></div>
+        </div>
+
+        <div class="footer-row">
+          <div class="tiny">Missed it? Read the hint, then try again.</div>
+          <div class="btn-row">
+            <button id="restartBtn" class="btn-secondary" type="button">Restart Game</button>
+            <button id="endBtn" class="btn-bad" type="button">End Game</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="resultsScreen" class="screen">
+      <div class="section-card results">
+        <div class="tiny">Game Complete</div>
+        <h2 style="margin:6px 0 0;">Foundations of the Republic</h2>
+        <div class="score" id="finalAccuracy">0%</div>
+        <div class="tiny" id="finalLine">Nice work.</div>
+
+        <div class="result-grid">
+          <div class="result-box">
+            <div class="k">Student</div>
+            <div class="v" id="resultStudent">—</div>
+          </div>
+          <div class="result-box">
+            <div class="k">Class Card</div>
+            <div class="v" id="resultClass">—</div>
+          </div>
+          <div class="result-box">
+            <div class="k">Correct</div>
+            <div class="v" id="resultCorrect">0</div>
+          </div>
+          <div class="result-box">
+            <div class="k">Total Attempts</div>
+            <div class="v" id="resultAttempts">0</div>
+          </div>
+          <div class="result-box">
+            <div class="k">Questions</div>
+            <div class="v" id="resultQuestions">40</div>
+          </div>
+          <div class="result-box">
+            <div class="k">First-Try Correct</div>
+            <div class="v" id="resultFirstTry">0</div>
+          </div>
+          <div class="result-box">
+            <div class="k">Hints Used</div>
+            <div class="v" id="resultHints">0</div>
+          </div>
+          <div class="result-box">
+            <div class="k">Time</div>
+            <div class="v mono" id="resultTime">00:00</div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button id="playAgainBtn" class="btn-primary" type="button">Play Again</button>
+          <button id="backToStartBtn" class="btn-secondary" type="button">Back to Start</button>
+        </div>
+
+        <div class="review">
+          <h3 style="margin:0 0 10px;">Quick Review of Missed Concepts</h3>
+          <div id="reviewWrap" class="tiny">Perfect run — no missed concepts to review.</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const GAME_KEY = "foundations_republic_standalone_v2";
+
+    const QUESTIONS = [
+      {
+        topic: "Northwest Ordinance",
+        q: "What was the primary purpose of the Northwest Ordinance of 1787?",
+        choices: [
+          "To create the U.S. Supreme Court",
+          "To provide a system for governing western territories",
+          "To abolish the Articles of Confederation",
+          "To regulate trade with foreign nations"
+        ],
+        answer: "To provide a system for governing western territories",
+        hint: "Think: this law organized land before it became states."
+      },
+      {
+        topic: "Northwest Ordinance",
+        q: "The Northwest Ordinance established a process for territories to eventually do what?",
+        choices: [
+          "Join the British Empire",
+          "Become independent nations",
+          "Become states in the United States",
+          "Remain permanent federal territories"
+        ],
+        answer: "Become states in the United States",
+        hint: "It created a path from territory status to equal statehood."
+      },
+      {
+        topic: "Northwest Ordinance",
+        q: "Which institution did the Northwest Ordinance encourage in the territories?",
+        choices: [
+          "State religions",
+          "Public education",
+          "Military academies",
+          "Trade monopolies"
+        ],
+        answer: "Public education",
+        hint: "Look for the idea of 'schools and the means of education.'"
+      },
+      {
+        topic: "Northwest Ordinance",
+        q: "Which civil liberty protected individuals from unlawful imprisonment under the Northwest Ordinance?",
+        choices: [
+          "Freedom of speech",
+          "Habeas corpus",
+          "Right to vote",
+          "Freedom of press"
+        ],
+        answer: "Habeas corpus",
+        hint: "This protection requires government to justify detention."
+      },
+      {
+        topic: "Northwest Ordinance",
+        q: "Which practice was prohibited in the Northwest Territory by the Northwest Ordinance?",
+        choices: [
+          "Religious freedom",
+          "Trial by jury",
+          "Slavery",
+          "Trade tariffs"
+        ],
+        answer: "Slavery",
+        hint: "This ban later connects to the 13th Amendment."
+      },
+      {
+        topic: "Northwest Ordinance",
+        q: "The Northwest Ordinance required that future states have what type of government?",
+        choices: [
+          "Monarchy",
+          "Republic",
+          "Direct democracy",
+          "Military government"
+        ],
+        answer: "Republic",
+        hint: "Think representative government, not rule by a king."
+      },
+      {
+        topic: "Northwest Ordinance",
+        q: "Which later constitutional amendment reflected the Northwest Ordinance’s prohibition of slavery?",
+        choices: [
+          "10th Amendment",
+          "12th Amendment",
+          "13th Amendment",
+          "15th Amendment"
+        ],
+        answer: "13th Amendment",
+        hint: "This amendment ended slavery nationally."
+      },
+      {
+        topic: "Northwest Ordinance",
+        q: "Which civil liberty included in the Northwest Ordinance later appeared in the Bill of Rights?",
+        choices: [
+          "Trial by jury",
+          "Free public education",
+          "National taxation",
+          "Military protection"
+        ],
+        answer: "Trial by jury",
+        hint: "This right appears again in protections for accused persons."
+      },
+      {
+        topic: "Northwest Ordinance",
+        q: "The Northwest Ordinance established an important precedent by showing that territories could:",
+        choices: [
+          "Become equal states",
+          "Remain permanently controlled by Congress",
+          "Form separate countries",
+          "Be governed by foreign powers"
+        ],
+        answer: "Become equal states",
+        hint: "The ordinance did not treat territories as forever inferior."
+      },
+      {
+        topic: "Northwest Ordinance",
+        q: "Which principle from the Northwest Ordinance was later repeated in the Constitution?",
+        choices: [
+          "States must have republican governments",
+          "All states must have the same economy",
+          "Territories must pay taxes to Britain",
+          "National elections must be held yearly"
+        ],
+        answer: "States must have republican governments",
+        hint: "Think of the guarantee of a republican form of government."
+      },
+
+      {
+        topic: "Basic Constitutional Principles",
+        q: "Which principle states that government authority comes from the people?",
+        choices: [
+          "Federalism",
+          "Popular sovereignty",
+          "Limited government",
+          "Judicial review"
+        ],
+        answer: "Popular sovereignty",
+        hint: "This principle is tied to 'consent of the governed.'"
+      },
+      {
+        topic: "Basic Constitutional Principles",
+        q: "The phrase 'consent of the governed' best reflects which constitutional principle?",
+        choices: [
+          "Federalism",
+          "Popular sovereignty",
+          "Separation of powers",
+          "Checks and balances"
+        ],
+        answer: "Popular sovereignty",
+        hint: "Who gives government its legitimacy under the Constitution?"
+      },
+      {
+        topic: "Basic Constitutional Principles",
+        q: "Which principle divides power between national and state governments?",
+        choices: [
+          "Federalism",
+          "Popular sovereignty",
+          "Limited government",
+          "Judicial authority"
+        ],
+        answer: "Federalism",
+        hint: "Think vertical division of power."
+      },
+      {
+        topic: "Basic Constitutional Principles",
+        q: "Which principle requires government to follow the law and only exercise powers granted to it?",
+        choices: [
+          "Checks and balances",
+          "Limited government",
+          "Popular sovereignty",
+          "Separation of powers"
+        ],
+        answer: "Limited government",
+        hint: "Government is not all-powerful under this principle."
+      },
+      {
+        topic: "Basic Constitutional Principles",
+        q: "When Congress makes laws, the president enforces them, and courts interpret them, this illustrates:",
+        choices: [
+          "Popular sovereignty",
+          "Federalism",
+          "Separation of powers",
+          "Judicial supremacy"
+        ],
+        answer: "Separation of powers",
+        hint: "Each branch has its own field of authority."
+      },
+      {
+        topic: "Basic Constitutional Principles",
+        q: "When the president can veto a bill passed by Congress, this demonstrates:",
+        choices: [
+          "Checks and balances",
+          "Popular sovereignty",
+          "Federalism",
+          "Direct democracy"
+        ],
+        answer: "Checks and balances",
+        hint: "One branch is restraining another."
+      },
+      {
+        topic: "Basic Constitutional Principles",
+        q: "Which principle best prevents one branch of government from becoming too powerful?",
+        choices: [
+          "Checks and balances",
+          "Popular sovereignty",
+          "Limited monarchy",
+          "Judicial federalism"
+        ],
+        answer: "Checks and balances",
+        hint: "This principle lets branches restrain each other."
+      },
+      {
+        topic: "Basic Constitutional Principles",
+        q: "A state government setting school policy while the national government handles defense is an example of:",
+        choices: [
+          "Federalism",
+          "Popular sovereignty",
+          "Checks and balances",
+          "Judicial review"
+        ],
+        answer: "Federalism",
+        hint: "Different levels of government handle different powers."
+      },
+      {
+        topic: "Basic Constitutional Principles",
+        q: "Why is the United States described as a federal republic?",
+        choices: [
+          "Because all power belongs only to the states",
+          "Because citizens rule directly without representatives",
+          "Because power is divided between levels of government and citizens elect representatives",
+          "Because judges make all final policy decisions"
+        ],
+        answer: "Because power is divided between levels of government and citizens elect representatives",
+        hint: "Combine representative government with shared national-state power."
+      },
+      {
+        topic: "Basic Constitutional Principles",
+        q: "Which situation best illustrates limited government?",
+        choices: [
+          "A leader ignores court rulings",
+          "Government officials act outside constitutional authority",
+          "Government follows constitutional rules and legal limits",
+          "Congress eliminates elections during an emergency"
+        ],
+        answer: "Government follows constitutional rules and legal limits",
+        hint: "The rule of law is the key phrase."
+      },
+
+      {
+        topic: "Constitution Structure",
+        q: "The U.S. Constitution created which structure for the national government?",
+        choices: [
+          "Two branches",
+          "Three branches",
+          "Four branches",
+          "One unified branch"
+        ],
+        answer: "Three branches",
+        hint: "Legislative, executive, and judicial."
+      },
+      {
+        topic: "Constitution Structure",
+        q: "Which branch of government is responsible for making laws?",
+        choices: [
+          "Executive",
+          "Judicial",
+          "Legislative",
+          "Administrative"
+        ],
+        answer: "Legislative",
+        hint: "Think Congress."
+      },
+      {
+        topic: "Constitution Structure",
+        q: "Which power given to Congress helps the government address national problems?",
+        choices: [
+          "Declaring local laws",
+          "Levying taxes",
+          "Appointing governors",
+          "Creating state courts"
+        ],
+        answer: "Levying taxes",
+        hint: "This power raises revenue to run the national government."
+      },
+      {
+        topic: "Constitution Structure",
+        q: "Which constitutional principle divides power between national and state governments?",
+        choices: [
+          "Popular sovereignty",
+          "Federalism",
+          "Judicial review",
+          "Limited monarchy"
+        ],
+        answer: "Federalism",
+        hint: "This principle appears in both structure and powers questions."
+      },
+      {
+        topic: "Constitution Structure",
+        q: "Which constitutional feature allows the government to adapt to changing conditions?",
+        choices: [
+          "Amendments",
+          "Treaties",
+          "Elections",
+          "Executive orders"
+        ],
+        answer: "Amendments",
+        hint: "This formal process changes the Constitution itself."
+      },
+      {
+        topic: "Constitution Structure",
+        q: "Which phrase best describes the relationship between the people and the government under the Constitution?",
+        choices: [
+          "Rule by monarchy",
+          "Consent of the governed",
+          "Authority of the military",
+          "Control by Congress"
+        ],
+        answer: "Consent of the governed",
+        hint: "Government power is legitimate because people allow it."
+      },
+      {
+        topic: "Constitution Structure",
+        q: "Which principle limits government power to protect individual rights?",
+        choices: [
+          "Limited government",
+          "Economic freedom",
+          "Military authority",
+          "Legislative supremacy"
+        ],
+        answer: "Limited government",
+        hint: "This principle keeps government within constitutional boundaries."
+      },
+      {
+        topic: "Constitution Structure",
+        q: "The Constitution ensures citizens influence government mainly through:",
+        choices: [
+          "Military service",
+          "Voting for representatives",
+          "Tax payments",
+          "Court decisions"
+        ],
+        answer: "Voting for representatives",
+        hint: "Think of the people’s direct role in elections."
+      },
+      {
+        topic: "Constitution Structure",
+        q: "Which power allows Congress to regulate trade among the states?",
+        choices: [
+          "Commerce power",
+          "War power",
+          "Treaty power",
+          "Appointment power"
+        ],
+        answer: "Commerce power",
+        hint: "This is tied to interstate business and trade."
+      },
+      {
+        topic: "Constitution Structure",
+        q: "Which example best shows how the Constitution protects rights while still creating an effective government?",
+        choices: [
+          "It gives unlimited power to one branch",
+          "It separates powers and limits government authority",
+          "It allows states to ignore all national laws",
+          "It removes the people from elections"
+        ],
+        answer: "It separates powers and limits government authority",
+        hint: "Look for the balance between power and liberty."
+      },
+
+      {
+        topic: "Federalists vs Anti-Federalists",
+        q: "Why did the Federalists write the Federalist Papers?",
+        choices: [
+          "To oppose ratification of the Constitution",
+          "To persuade people to support ratification of the Constitution",
+          "To replace the Bill of Rights",
+          "To defend the Articles of Confederation"
+        ],
+        answer: "To persuade people to support ratification of the Constitution",
+        hint: "They argued in favor of the new Constitution."
+      },
+      {
+        topic: "Federalists vs Anti-Federalists",
+        q: "Which policy would the Federalists most likely support?",
+        choices: [
+          "A weak central government",
+          "A strong national government with checks and balances",
+          "Eliminating taxes entirely",
+          "Giving most power only to the states"
+        ],
+        answer: "A strong national government with checks and balances",
+        hint: "They wanted national strength, but not unchecked power."
+      },
+      {
+        topic: "Federalists vs Anti-Federalists",
+        q: "Why did Federalists support national taxation?",
+        choices: [
+          "To weaken the states",
+          "To fund the central government",
+          "To eliminate commerce",
+          "To end elections"
+        ],
+        answer: "To fund the central government",
+        hint: "A government needs revenue to function."
+      },
+      {
+        topic: "Federalists vs Anti-Federalists",
+        q: "Why did Federalists favor a standing army?",
+        choices: [
+          "To control state elections",
+          "To provide strong national defense",
+          "To replace state militias in all situations",
+          "To limit Congress"
+        ],
+        answer: "To provide strong national defense",
+        hint: "They were concerned about security and defense."
+      },
+      {
+        topic: "Federalists vs Anti-Federalists",
+        q: "Which concern would most likely be expressed by an Anti-Federalist?",
+        choices: [
+          "The national government is too weak to survive",
+          "National taxation could become repressive",
+          "There should be fewer protections for liberty",
+          "A Bill of Rights is unnecessary"
+        ],
+        answer: "National taxation could become repressive",
+        hint: "They feared abuse by a strong central government."
+      },
+      {
+        topic: "Federalists vs Anti-Federalists",
+        q: "Why did Anti-Federalists worry about a standing army?",
+        choices: [
+          "It would reduce foreign trade",
+          "It might be used against citizens",
+          "It would create too many schools",
+          "It would weaken local juries"
+        ],
+        answer: "It might be used against citizens",
+        hint: "Their fear centered on government power being turned inward."
+      },
+      {
+        topic: "Federalists vs Anti-Federalists",
+        q: "The Anti-Federalists were most concerned that the Constitution did not do enough to protect:",
+        choices: [
+          "Imports",
+          "Territory expansion",
+          "Individual liberties",
+          "Military alliances"
+        ],
+        answer: "Individual liberties",
+        hint: "This concern directly helped lead to later amendments."
+      },
+      {
+        topic: "Federalists vs Anti-Federalists",
+        q: "What was one major result of the debate between Federalists and Anti-Federalists?",
+        choices: [
+          "The elimination of Congress",
+          "The adoption of the Bill of Rights",
+          "The cancellation of ratification",
+          "The return to British rule"
+        ],
+        answer: "The adoption of the Bill of Rights",
+        hint: "Think of the compromise that answered liberty concerns."
+      },
+      {
+        topic: "Federalists vs Anti-Federalists",
+        q: "Which right found in the Bill of Rights directly answered Anti-Federalist concerns about liberty?",
+        choices: [
+          "Freedom of speech",
+          "The right to own territory",
+          "The right to appoint judges",
+          "The power to tax imports"
+        ],
+        answer: "Freedom of speech",
+        hint: "Look for a classic First Amendment protection."
+      },
+      {
+        topic: "Federalists vs Anti-Federalists",
+        q: "How did the Federalist and Anti-Federalist debates influence the Constitution?",
+        choices: [
+          "They led to the Bill of Rights being added to protect liberties",
+          "They ended the idea of checks and balances",
+          "They removed the power of states completely",
+          "They prevented ratification forever"
+        ],
+        answer: "They led to the Bill of Rights being added to protect liberties",
+        hint: "The debate produced added protections, not total rejection."
+      }
+    ];
+
+    const startScreen = document.getElementById("startScreen");
+    const gameScreen = document.getElementById("gameScreen");
+    const resultsScreen = document.getElementById("resultsScreen");
+
+    const studentNameInput = document.getElementById("studentName");
+    const classCardSelect = document.getElementById("classCard");
+    const startBtn = document.getElementById("startBtn");
+    const resetStoredBtn = document.getElementById("resetStoredBtn");
+
+    const studentStat = document.getElementById("studentStat");
+    const progressStat = document.getElementById("progressStat");
+    const accuracyStat = document.getElementById("accuracyStat");
+    const timerStat = document.getElementById("timerStat");
+    const startedStat = document.getElementById("startedStat");
+    const topicPill = document.getElementById("topicPill");
+    const classPill = document.getElementById("classPill");
+    const questionText = document.getElementById("questionText");
+    const choicesWrap = document.getElementById("choicesWrap");
+    const feedback = document.getElementById("feedback");
+    const progressBar = document.getElementById("progressBar");
+    const restartBtn = document.getElementById("restartBtn");
+    const endBtn = document.getElementById("endBtn");
+
+    const finalAccuracy = document.getElementById("finalAccuracy");
+    const finalLine = document.getElementById("finalLine");
+    const resultStudent = document.getElementById("resultStudent");
+    const resultClass = document.getElementById("resultClass");
+    const resultCorrect = document.getElementById("resultCorrect");
+    const resultAttempts = document.getElementById("resultAttempts");
+    const resultQuestions = document.getElementById("resultQuestions");
+    const resultFirstTry = document.getElementById("resultFirstTry");
+    const resultHints = document.getElementById("resultHints");
+    const resultTime = document.getElementById("resultTime");
+    const reviewWrap = document.getElementById("reviewWrap");
+    const playAgainBtn = document.getElementById("playAgainBtn");
+    const backToStartBtn = document.getElementById("backToStartBtn");
+
+    let state = null;
+    let timerInterval = null;
+
+    function shuffle(array){
+      const a = array.slice();
+      for(let i = a.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function formatTime(totalSeconds){
+      const m = Math.floor(totalSeconds / 60).toString().padStart(2,"0");
+      const s = Math.floor(totalSeconds % 60).toString().padStart(2,"0");
+      return `${m}:${s}`;
+    }
+
+    function nowStamp(){
+      const d = new Date();
+      const mm = (d.getMonth()+1).toString().padStart(2,"0");
+      const dd = d.getDate().toString().padStart(2,"0");
+      let hh = d.getHours();
+      const min = d.getMinutes().toString().padStart(2,"0");
+      const ampm = hh >= 12 ? "PM" : "AM";
+      hh = hh % 12 || 12;
+      return `${mm}/${dd} ${hh}:${min} ${ampm}`;
+    }
+
+    function showScreen(screen){
+      [startScreen, gameScreen, resultsScreen].forEach(s => s.classList.remove("active"));
+      screen.classList.add("active");
+    }
+
+    function buildFreshState(studentName, classCard){
+      const qOrder = shuffle(QUESTIONS).map(q => ({
+        ...q,
+        shuffledChoices: shuffle(q.choices),
+        answeredCorrectly: false,
+        firstTryCorrect: false,
+        hintUsed: false,
+        attempts: 0,
+        wrongSelections: []
+      }));
+
+      return {
+        studentName,
+        classCard,
+        startedAt: nowStamp(),
+        startedAtMs: Date.now(),
+        elapsedSeconds: 0,
+        currentIndex: 0,
+        totalAttempts: 0,
+        totalCorrect: 0,
+        firstTryCorrect: 0,
+        hintsUsed: 0,
+        questions: qOrder,
+        completed: false
+      };
+    }
+
+    function saveState(){
+      localStorage.setItem(GAME_KEY, JSON.stringify(state));
+    }
+
+    function clearState(){
+      localStorage.removeItem(GAME_KEY);
+    }
+
+    function loadState(){
+      const raw = localStorage.getItem(GAME_KEY);
+      if(!raw) return null;
+      try{
+        return JSON.parse(raw);
+      }catch{
+        return null;
+      }
+    }
+
+    function startTimer(){
+      stopTimer();
+      timerInterval = setInterval(() => {
+        if(!state || state.completed) return;
+        state.elapsedSeconds = Math.floor((Date.now() - state.startedAtMs) / 1000);
+        timerStat.textContent = formatTime(state.elapsedSeconds);
+        saveState();
+      }, 1000);
+    }
+
+    function stopTimer(){
+      if(timerInterval){
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    function updateHeader(){
+      studentStat.textContent = state.studentName || "Student";
+      progressStat.textContent = `${state.currentIndex} / ${state.questions.length}`;
+      const acc = state.totalAttempts ? Math.round((state.totalCorrect / state.totalAttempts) * 100) : 0;
+      accuracyStat.textContent = `${acc}%`;
+      timerStat.textContent = formatTime(state.elapsedSeconds);
+      startedStat.textContent = state.startedAt;
+      classPill.textContent = `Class: ${state.classCard || "—"}`;
+      progressBar.style.width = `${(state.currentIndex / state.questions.length) * 100}%`;
+    }
+
+    function renderQuestion(){
+      updateHeader();
+
+      const item = state.questions[state.currentIndex];
+      if(!item){
+        finishGame();
+        return;
+      }
+
+      topicPill.textContent = `Topic: ${item.topic}`;
+      questionText.textContent = `${state.currentIndex + 1}. ${item.q}`;
+      choicesWrap.innerHTML = "";
+
+      item.shuffledChoices.forEach(choice => {
+        const btn = document.createElement("button");
+        btn.className = "choice";
+        btn.type = "button";
+        btn.textContent = choice;
+        btn.addEventListener("click", () => handleChoice(choice, btn));
+        choicesWrap.appendChild(btn);
+      });
+
+      feedback.className = "feedback";
+      feedback.innerHTML = `<strong>Directions</strong>Choose the best answer.`;
+    }
+
+    function lockChoices(){
+      [...choicesWrap.children].forEach(btn => btn.classList.add("locked"));
+    }
+
+    function handleChoice(choice, btnEl){
+      const item = state.questions[state.currentIndex];
+      if(!item || item.answeredCorrectly) return;
+
+      state.totalAttempts += 1;
+      item.attempts += 1;
+
+      if(choice === item.answer){
+        state.totalCorrect += 1;
+        item.answeredCorrectly = true;
+
+        if(item.attempts === 1){
+          item.firstTryCorrect = true;
+          state.firstTryCorrect += 1;
+        }
+
+        btnEl.classList.add("correct");
+        lockChoices();
+
+        feedback.className = "feedback good";
+        feedback.innerHTML = `<strong>Correct</strong>Nice work. Moving to the next question...`;
+
+        state.currentIndex += 1;
+        state.elapsedSeconds = Math.floor((Date.now() - state.startedAtMs) / 1000);
+        saveState();
+        updateHeader();
+
+        setTimeout(() => {
+          if(state.currentIndex >= state.questions.length){
+            finishGame();
+          } else {
+            renderQuestion();
+          }
+        }, 700);
+      } else {
+        btnEl.classList.add("incorrect", "locked");
+        item.wrongSelections.push(choice);
+
+        if(!item.hintUsed){
+          item.hintUsed = true;
+          state.hintsUsed += 1;
+        }
+
+        feedback.className = "feedback warn";
+        feedback.innerHTML = `<strong>Not yet</strong>Hint: ${item.hint}`;
+        state.elapsedSeconds = Math.floor((Date.now() - state.startedAtMs) / 1000);
+        saveState();
+        updateHeader();
+      }
+    }
+
+    function finishGame(){
+      state.completed = true;
+      state.elapsedSeconds = Math.floor((Date.now() - state.startedAtMs) / 1000);
+      saveState();
+      stopTimer();
+
+      const acc = state.totalAttempts ? Math.round((state.totalCorrect / state.totalAttempts) * 100) : 0;
+      finalAccuracy.textContent = `${acc}%`;
+      finalLine.textContent = acc === 100
+        ? "Perfect accuracy. Legend-level run."
+        : acc >= 85
+          ? "Strong work. Review the missed concepts below and run it back."
+          : "Good reps. Review the missed concepts and attack it again.";
+
+      resultStudent.textContent = state.studentName || "Student";
+      resultClass.textContent = state.classCard || "—";
+      resultCorrect.textContent = state.totalCorrect;
+      resultAttempts.textContent = state.totalAttempts;
+      resultQuestions.textContent = state.questions.length;
+      resultFirstTry.textContent = state.firstTryCorrect;
+      resultHints.textContent = state.hintsUsed;
+      resultTime.textContent = formatTime(state.elapsedSeconds);
+
+      const missed = state.questions.filter(q => !q.firstTryCorrect);
+      if(!missed.length){
+        reviewWrap.textContent = "Perfect run — no missed concepts to review.";
+      } else {
+        reviewWrap.innerHTML = missed.map((q, i) => `
+          <div class="review-item">
+            <div class="review-q">${i + 1}. ${q.q}</div>
+            <div class="review-a"><strong>Correct Answer:</strong> ${q.answer}<br><strong>Topic:</strong> ${q.topic}</div>
+          </div>
+        `).join("");
+      }
+
+      showScreen(resultsScreen);
+    }
+
+    function startNewGame(){
+      const studentName = studentNameInput.value.trim();
+      const classCard = classCardSelect.value.trim();
+
+      if(!studentName){
+        alert("Please enter a student name.");
+        studentNameInput.focus();
+        return;
+      }
+      if(!classCard){
+        alert("Please choose a class / period card.");
+        classCardSelect.focus();
+        return;
+      }
+
+      state = buildFreshState(studentName, classCard);
+      saveState();
+      showScreen(gameScreen);
+      renderQuestion();
+      startTimer();
+    }
+
+    function restartGame(){
+      if(!state) return;
+      const studentName = state.studentName;
+      const classCard = state.classCard;
+      state = buildFreshState(studentName, classCard);
+      saveState();
+      showScreen(gameScreen);
+      renderQuestion();
+      startTimer();
+    }
+
+    startBtn.addEventListener("click", startNewGame);
+
+    resetStoredBtn.addEventListener("click", () => {
+      clearState();
+      alert("Saved session cleared for this game.");
+    });
+
+    restartBtn.addEventListener("click", () => {
+      if(confirm("Restart this game from the beginning? Your current progress will be replaced.")){
+        restartGame();
+      }
+    });
+
+    endBtn.addEventListener("click", () => {
+      if(confirm("End the current game and score it now?")){
+        finishGame();
+      }
+    });
+
+    playAgainBtn.addEventListener("click", () => {
+      if(!state) return;
+      const studentName = state.studentName;
+      const classCard = state.classCard;
+      state = buildFreshState(studentName, classCard);
+      saveState();
+      showScreen(gameScreen);
+      renderQuestion();
+      startTimer();
+    });
+
+    backToStartBtn.addEventListener("click", () => {
+      stopTimer();
+      showScreen(startScreen);
+    });
+
+    window.addEventListener("beforeunload", () => {
+      if(state && !state.completed){
+        state.elapsedSeconds = Math.floor((Date.now() - state.startedAtMs) / 1000);
+        saveState();
+      }
+    });
+
+    (function init(){
+      const saved = loadState();
+      if(saved && !saved.completed){
+        state = saved;
+        if(typeof state.startedAtMs !== "number"){
+          state.startedAtMs = Date.now() - ((state.elapsedSeconds || 0) * 1000);
+        }
+        if(Array.isArray(state.questions) && state.questions.length){
+          showScreen(gameScreen);
+          renderQuestion();
+          startTimer();
+        } else {
+          clearState();
+          showScreen(startScreen);
+        }
+      } else {
+        showScreen(startScreen);
+      }
+    })();
+  </script>
+</body>
+</html>
